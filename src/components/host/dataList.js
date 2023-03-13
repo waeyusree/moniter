@@ -92,7 +92,7 @@ const DataList = () => {
                     <th>Status</th>
                     <th>หมายเหตุ</th>
                     <th>Last update</th>
-                    <th style={{width: 129, textAlign: "center"}}>จัดการ</th>
+                    <th style={{width: 132, textAlign: "center"}}>จัดการ</th>
                 </tr>
                 </thead>
                 <tbody>{DataTable()}</tbody>

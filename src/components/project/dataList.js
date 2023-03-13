@@ -11,8 +11,7 @@ const DataList = () => {
         Axios
         .get("http://localhost:3001/projectList")
         .then(({ data }) => {
-            console.log(data);
-
+            // console.log(data);
             setProjectList(data);
         })
         .catch((error) => {
@@ -44,10 +43,10 @@ const DataList = () => {
                 <tr>
                     <th>ลำดับ</th>
                     <th>ชื่อโครงการ</th>
-                    <th>con job</th>
+                    <th>con job(นาที่)</th>
                     <th>create date</th>
                     <th>update date</th>
-                    <th style={{width: 195, textAlign: "center"}}>จัดการ</th>
+                    <th style={{width: 200, textAlign: "center"}}>จัดการ</th>
                 </tr>
                 </thead>
                 <tbody>{DataTable()}</tbody>

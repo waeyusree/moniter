@@ -6,7 +6,7 @@ import HostTableRow from "./tableRow";
 
 const DataList = () => {
     const params = useParams()
-    const id     = params.id;
+    const projectId     = params.id;
 
     const [projectDetail, setProjectDetail] = useState([]);
     const [hostList, setHostList] = useState([]);
@@ -15,7 +15,7 @@ const DataList = () => {
         Axios
         .get(
             "http://localhost:3001/project/detail/"
-            + id
+            + projectId
         )
         .then(({ data }) => {
             setHostList(data);
@@ -29,7 +29,7 @@ const DataList = () => {
         Axios
         .get(
             "http://localhost:3001/projectId/"
-            + id
+            + projectId
         )
         .then(({ data }) => {
             setProjectDetail(data[0]);
@@ -51,12 +51,12 @@ const DataList = () => {
     // === Host === //
     const checkHost = () => {
         Axios
-        .get('http://localhost:3001/check_host')
+        .get("http://localhost:3001/check_host/" + projectId)
         .then(({data}) => {
 
             if(data.status === 200)
             {
-                console.log(data.dataList);
+                // console.log(data.dataList);
                 setHostList(data.dataList);
             }
 
@@ -74,7 +74,7 @@ const DataList = () => {
             <br/>
 
             <div style={{paddingBottom: 5}}>
-                <Link to={"/project-host-create/" + id}>
+                <Link to={"/project-host-create/" + projectId}>
                     <Button variant="primary">เพิ่ม</Button>
                 </Link>
                 <Button variant="primary" style={{marginLeft: 20}} onClick={checkHost}>ตรวจสอบ</Button>

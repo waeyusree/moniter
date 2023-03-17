@@ -23,6 +23,12 @@ const HostEdit = () => {
     const [service, setService]             = useState("");
     const [remark, setRemark]               = useState("");
 
+    const [showOptionDatabase, setShowOptionDatabase]   = useState(false);
+    const [sqlTypeId, setSqlTypeId]     = useState("");
+    const [username, setUsername]       = useState("");
+    const [password, setPassword]       = useState("");
+    const [myDatabase, setMyDatabase]   = useState("");
+
     // Load data from server and reinitialize student form
     useEffect(() => {
       Axios
@@ -42,6 +48,16 @@ const HostEdit = () => {
           setService(response.data[0].port);
           setRemark(response.data[0].remark);
 
+          setSqlTypeId(response.data[0].sql_type_id);
+          setUsername(response.data[0].username);
+          setPassword(response.data[0].password);
+          setMyDatabase(response.data[0].my_database);
+
+          if(response.data[0].duty_id === 3) /** === เป็นชนิด database === */
+          {
+            setShowOptionDatabase(true);
+          }
+
           // const { name, email, rollno } = response.data;
           // setFormValues({ name, email, rollno });
         })
@@ -49,43 +65,77 @@ const HostEdit = () => {
     }, []);
 
     const updateHost = () => {
-        Axios.put('http://localhost:3001/host/update', {
-          id: id,
-          projectId: projectId,
-          machineName: machineName,
-          dutyId: dutyId,
-          publicIp: publicIp,
-          privateIp: privateIp,
-          service: service,
-          remark: remark
-        }).then((response) => {
-
-          if(response.data.status === 200)
-          {
-            Swal.fire({
-              show: true,
-              title: response.data.message,
-              html: "<br/>",
-              icon: 'success',
-              showConfirmButton: false,
-              width: 400,
-            });
-
-          }
-          else
-          {
-            Swal.fire({
-              show: true,
-              title: response.data.message,
-              html: "<br/>",
-              icon: 'warning',
-              showConfirmButton: false,
-              width: 400,
-            });
-          }
-
-        });
+      const dataPost = {
+        id: id,
+        projectId: projectId,
+        machineName: machineName,
+        dutyId: dutyId,
+        publicIp: publicIp,
+        privateIp: privateIp,
+        service: service,
+        remark: remark
       };
+  
+      /** === database === */
+      if(dutyId === '3')
+      {
+        dataPost.sqlTypeId = sqlTypeId;
+        dataPost.username = username;
+        dataPost.password = password;
+        dataPost.myDatabase = myDatabase;
+      }
+      
+      Axios.put('http://localhost:3001/host/update', dataPost).then((response) => {
+
+        if(response.data.status === 200)
+        {
+          Swal.fire({
+            show: true,
+            title: response.data.message,
+            html: "<br/>",
+            icon: 'success',
+            showConfirmButton: false,
+            width: 400,
+          });
+
+        }
+        else
+        {
+          Swal.fire({
+            show: true,
+            title: response.data.message,
+            html: "<br/>",
+            icon: 'warning',
+            showConfirmButton: false,
+            width: 400,
+          });
+        }
+
+      });
+    };
+
+    const toggleOptionDatabase = (event) => {
+      const value = event.target.value;
+      if(value)
+      {
+        setDutyId(value);
+        if(value === '3')
+        {
+          setShowOptionDatabase(true);
+        }
+        else
+        {
+          setShowOptionDatabase(false);
+
+          setService("");
+          setSqlTypeId("");
+          setUsername("");
+          setPassword("");
+          setMyDatabase("");
+        
+        }
+      }
+    }
 
     return (
       <>
@@ -119,7 +169,7 @@ const HostEdit = () => {
           <Col sm={10}>
               {/* <Form.Control type="text" placeholder="หน้าที่" value={dutyId} onChange={(event) => { setDutyId(event.target.value) }}/> */}
               
-              <Form.Select aria-label="Default select example" onChange={(event) => { setDutyId(event.target.value) }}>
+              <Form.Select aria-label="Default select example" value={dutyId} onChange={toggleOptionDatabase}> {/* onChange={(event) => { setDutyId(event.target.value) }} */}
                 <option>--- เลือก ---</option>
                 <option value="1">Web</option>
                 <option value="2">API</option>
@@ -127,6 +177,52 @@ const HostEdit = () => {
               </Form.Select>
           </Col>
           </Form.Group>
+
+          { showOptionDatabase &&
+            <div>
+              <hr/>
+                <Form.Group as={Row} className="mb-3" controlId="formHorizontalSqlTypeId">
+                <Form.Label column sm={{ span: 2, offset: 2 }}>
+                    ประเภท SQL
+                </Form.Label>
+                <Col sm={6}>
+                    <Form.Select aria-label="Default select example" value={sqlTypeId} onChange={(event) => { setSqlTypeId(event.target.value) }}>
+                      <option>--- เลือก ---</option>
+                      <option value="1">MySQL</option>
+                      {/* <option value="2">MongoDB</option> */}
+                    </Form.Select>
+                </Col>
+                </Form.Group>
+
+                <Form.Group as={Row} className="mb-3" controlId="formHorizontalUsername">
+                <Form.Label column sm={{ span: 2, offset: 2 }}>
+                    Username
+                </Form.Label>
+                <Col sm={6}>
+                    <Form.Control type="text" placeholder=" Username" value={username} onChange={(event) => { setUsername(event.target.value) }}/>
+                </Col>
+                </Form.Group>
+
+                <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+                <Form.Label column sm={{ span: 2, offset: 2 }}>
+                    Password
+                </Form.Label>
+                <Col sm={6}>
+                    <Form.Control type="password" placeholder="Password" value={password} onChange={(event) => { setPassword(event.target.value) }}/>
+                </Col>
+                </Form.Group>
+
+                <Form.Group as={Row} className="mb-3" controlId="formHorizontalDatabase">
+                <Form.Label column sm={{ span: 2, offset: 2 }}>
+                    Database
+                </Form.Label>
+                <Col sm={6}>
+                    <Form.Control type="text" placeholder="Database" value={myDatabase} onChange={(event) => { setMyDatabase(event.target.value) }}/>
+                </Col>
+                </Form.Group>
+              <hr/>
+            </div>
+          }
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalPublicIp">
           <Form.Label column sm={2}>

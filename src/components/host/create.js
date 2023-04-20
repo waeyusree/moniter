@@ -15,9 +15,10 @@ const HostCreate = () => {
     
   // }, []);
 
-  const [projectId, setProjectId]         = useState(id ? id : "");
+  const [projectId, setProjectId]         = useState(id);
   const [machineName, setMachineName]     = useState("");
   const [dutyId, setDutyId]               = useState("");
+  const [ipTypeId, setIpTypeId]           = useState("1");
   const [publicIp, setPublicIp]           = useState("");
   const [privateIp, setPrivateIp]         = useState("");
   const [service, setService]             = useState("");
@@ -27,20 +28,21 @@ const HostCreate = () => {
   const [sqlTypeId, setSqlTypeId]     = useState("");
   const [username, setUsername]       = useState("");
   const [password, setPassword]       = useState("");
-  const [myDatabase, setMyDatabase]       = useState("");
+  const [myDatabase, setMyDatabase]   = useState("");
 
   const addHost = () => {
     const dataPost = {
       projectId: projectId,
       machineName: machineName,
       dutyId: dutyId,
+      ipTypeId: ipTypeId,
       publicIp: publicIp,
       privateIp: privateIp,
       service: service,
       remark: remark
     };
 
-    if(dutyId === '3') /** === เป็นชนิด database === */
+    if(parseInt(dutyId) === 3) /** === เป็นชนิด database === */
     {
       dataPost.sqlTypeId = sqlTypeId;
       dataPost.username = username;
@@ -60,9 +62,9 @@ const HostCreate = () => {
           width: 400,
         });
 
-        setProjectId("");
         setMachineName("");
         setDutyId("");
+        setIpTypeId("1");
         setPublicIp("");
         setPrivateIp("");
         setService("");
@@ -110,6 +112,12 @@ const HostCreate = () => {
     }
   }
 
+  /* === radio === */
+  const handleChange = (event) => {
+    // console.log(event.target.value);
+    setIpTypeId(event.target.value);
+  };
+
   return (
     <>
       <Form>
@@ -117,7 +125,7 @@ const HostCreate = () => {
 
         {/* <Form.Group as={Row} className="mb-3" controlId="formHorizontalNameProject">
         <Form.Label column sm={2}>
-        ชื่อโครงงาน
+        ชื่อโครงงาน <span style={{color: "red"}}> * </span>
         </Form.Label>
         <Col sm={10}>
             <Form.Control type="text" placeholder="ชื่อโครงงาน" value={projectId} onChange={(event) => { setProjectId(event.target.value) }}/>
@@ -128,7 +136,7 @@ const HostCreate = () => {
 
         <Form.Group as={Row} className="mb-3" controlId="formHorizontalNameSystem">
         <Form.Label column sm={2}>
-            ชื่อเครื่อง
+            ชื่อเครื่อง <span style={{color: "red"}}> * </span>
         </Form.Label>
         <Col sm={10}>
             <Form.Control type="text" placeholder="ชื่อเครื่อง" value={machineName} onChange={(event) => { setMachineName(event.target.value) }}/>
@@ -137,7 +145,7 @@ const HostCreate = () => {
 
         <Form.Group as={Row} className="mb-3" controlId="formHorizontalDutyId">
         <Form.Label column sm={2}>
-            หน้าที่
+            หน้าที่ <span style={{color: "red"}}> * </span>
         </Form.Label>
         <Col sm={10}>
             {/* <Form.Control type="text" placeholder="หน้าที่" value={dutyId} onChange={(event) => { setDutyId(event.target.value) }}/> */}
@@ -197,6 +205,32 @@ const HostCreate = () => {
           </div>
         }
 
+        <Form.Group as={Row} className="mb-3">
+          <Form.Label as="legend" column sm={2}>
+            ตรวจสอบโดยใช้ <span style={{color: "red"}}> * </span>
+          </Form.Label>
+          <Col sm={10}>
+            <Form.Check
+              type="radio"
+              label="Public IP"
+              name="formHorizontalIpType"
+              id="formHorizontalIpType1"
+              value="1"
+              checked={ipTypeId == "1"}
+              onChange={handleChange}
+            />
+            <Form.Check
+              type="radio"
+              label="Private IP"
+              name="formHorizontalIpType"
+              id="formHorizontalIpType2"
+              value="2"
+              checked={ipTypeId == "2"}
+              onChange={handleChange}
+            />
+          </Col>
+        </Form.Group>
+    
         <Form.Group as={Row} className="mb-3" controlId="formHorizontalPublicIp">
         <Form.Label column sm={2}>
             Public IP
@@ -208,7 +242,7 @@ const HostCreate = () => {
 
         <Form.Group as={Row} className="mb-3" controlId="formHorizontalPrivateIp">
         <Form.Label column sm={2}>
-        Private IP
+        Private IP <span style={{color: "red"}}> * </span>
         </Form.Label>
         <Col sm={10}>
             <Form.Control type="text" placeholder="Private IP" value={privateIp} onChange={(event) => { setPrivateIp(event.target.value) }}/>

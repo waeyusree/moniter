@@ -18,6 +18,7 @@ const HostEdit = () => {
     const [projectId, setProjectId]         = useState("");
     const [machineName, setMachineName]     = useState("");
     const [dutyId, setDutyId]               = useState("");
+    const [ipTypeId, setIpTypeId]           = useState("1");
     const [publicIp, setPublicIp]           = useState("");
     const [privateIp, setPrivateIp]         = useState("");
     const [service, setService]             = useState("");
@@ -43,6 +44,7 @@ const HostEdit = () => {
           setProjectId(response.data[0].project_id);
           setMachineName(response.data[0].machine_name);
           setDutyId(response.data[0].duty_id);
+          setIpTypeId(response.data[0].ip_type_id);
           setPublicIp(response.data[0].public_ip);
           setPrivateIp(response.data[0].private_ip);
           setService(response.data[0].port);
@@ -70,6 +72,7 @@ const HostEdit = () => {
         projectId: projectId,
         machineName: machineName,
         dutyId: dutyId,
+        ipTypeId: ipTypeId,
         publicIp: publicIp,
         privateIp: privateIp,
         service: service,
@@ -77,13 +80,15 @@ const HostEdit = () => {
       };
   
       /** === database === */
-      if(dutyId === '3')
+      if(parseInt(dutyId) === 3)
       {
         dataPost.sqlTypeId = sqlTypeId;
         dataPost.username = username;
         dataPost.password = password;
         dataPost.myDatabase = myDatabase;
       }
+
+      // console.log(dataPost); 
       
       Axios.put('http://localhost:3001/host/update', dataPost).then((response) => {
 
@@ -137,6 +142,12 @@ const HostEdit = () => {
       }
     }
 
+    /* === radio === */
+    const handleChange = (event) => {
+      // console.log(event.target.value);
+      setIpTypeId(event.target.value);
+    };
+
     return (
       <>
         <Form>
@@ -144,33 +155,33 @@ const HostEdit = () => {
 
             {/* <Form.Group as={Row} className="mb-3" controlId="formHorizontalNameProject">
           <Form.Label column sm={2}>
-          ชื่อโครงงาน
+          ชื่อโครงงาน <span style={{color: "red"}}> * </span>
           </Form.Label>
           <Col sm={10}>
               <Form.Control type="text" placeholder="ชื่อโครงงาน" value={projectId} onChange={(event) => { setProjectId(event.target.value) }}/>
               </Col>
           </Form.Group> */}
 
-          <Form.Control type="hidden" placeholder="ชื่อโครงงาน" value={projectId} onChange={(event) => { setProjectId(event.target.value) }}/>
+          <Form.Control type="hidden" placeholder="ชื่อโครงงาน" value={projectId ? projectId : ''} onChange={(event) => { setProjectId(event.target.value) }}/>
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalNameSystem">
           <Form.Label column sm={2}>
-              ชื่อเครื่อง
+              ชื่อเครื่อง <span style={{color: "red"}}> * </span>
           </Form.Label>
           <Col sm={10}>
-              <Form.Control type="text" placeholder="ชื่อเครื่อง" value={machineName} onChange={(event) => { setMachineName(event.target.value) }}/>
+              <Form.Control type="text" placeholder="ชื่อเครื่อง" value={machineName ? machineName : ''} onChange={(event) => { setMachineName(event.target.value) }}/>
           </Col>
           </Form.Group>
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalDutyId">
           <Form.Label column sm={2}>
-              หน้าที่
+              หน้าที่ <span style={{color: "red"}}> * </span>
           </Form.Label>
           <Col sm={10}>
               {/* <Form.Control type="text" placeholder="หน้าที่" value={dutyId} onChange={(event) => { setDutyId(event.target.value) }}/> */}
               
-              <Form.Select aria-label="Default select example" value={dutyId} onChange={toggleOptionDatabase}> {/* onChange={(event) => { setDutyId(event.target.value) }} */}
-                <option>--- เลือก ---</option>
+              <Form.Select aria-label="Default select example" value={dutyId ? dutyId : ''} onChange={toggleOptionDatabase}> {/* onChange={(event) => { setDutyId(event.target.value) }} */}
+                <option value="">--- เลือก ---</option>
                 <option value="1">Web</option>
                 <option value="2">API</option>
                 <option value="3">Database</option>
@@ -186,8 +197,8 @@ const HostEdit = () => {
                     ประเภท SQL
                 </Form.Label>
                 <Col sm={6}>
-                    <Form.Select aria-label="Default select example" value={sqlTypeId} onChange={(event) => { setSqlTypeId(event.target.value) }}>
-                      <option>--- เลือก ---</option>
+                    <Form.Select aria-label="Default select example" value={sqlTypeId ? sqlTypeId : ''} onChange={(event) => { setSqlTypeId(event.target.value) }}>
+                      <option value="">--- เลือก ---</option>
                       <option value="1">MySQL</option>
                       {/* <option value="2">MongoDB</option> */}
                     </Form.Select>
@@ -199,7 +210,7 @@ const HostEdit = () => {
                     Username
                 </Form.Label>
                 <Col sm={6}>
-                    <Form.Control type="text" placeholder=" Username" value={username} onChange={(event) => { setUsername(event.target.value) }}/>
+                    <Form.Control type="text" placeholder="Username" value={username ? username : ''} onChange={(event) => { setUsername(event.target.value) }}/>
                 </Col>
                 </Form.Group>
 
@@ -208,7 +219,7 @@ const HostEdit = () => {
                     Password
                 </Form.Label>
                 <Col sm={6}>
-                    <Form.Control type="password" placeholder="Password" value={password} onChange={(event) => { setPassword(event.target.value) }}/>
+                    <Form.Control type="password" placeholder="Password" value={password ? password : ''} onChange={(event) => { setPassword(event.target.value) }}/>
                 </Col>
                 </Form.Group>
 
@@ -217,28 +228,54 @@ const HostEdit = () => {
                     Database
                 </Form.Label>
                 <Col sm={6}>
-                    <Form.Control type="text" placeholder="Database" value={myDatabase} onChange={(event) => { setMyDatabase(event.target.value) }}/>
+                    <Form.Control type="text" placeholder="Database" value={myDatabase ? myDatabase : ''} onChange={(event) => { setMyDatabase(event.target.value) }}/>
                 </Col>
                 </Form.Group>
               <hr/>
             </div>
           }
 
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label as="legend" column sm={2}>
+              ตรวจสอบโดยใช้ <span style={{color: "red"}}> * </span>
+            </Form.Label>
+            <Col sm={10}>
+              <Form.Check
+                type="radio"
+                label="Public IP"
+                name="formHorizontalIpType"
+                id="formHorizontalIpType1"
+                value="1"
+                checked={ipTypeId == "1"}
+                onChange={handleChange}
+              />
+              <Form.Check
+                type="radio"
+                label="Private IP"
+                name="formHorizontalIpType"
+                id="formHorizontalIpType2"
+                value="2"
+                checked={ipTypeId == "2"}
+                onChange={handleChange}
+              />
+            </Col>
+          </Form.Group>
+
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalPublicIp">
           <Form.Label column sm={2}>
               Public IP
           </Form.Label>
           <Col sm={10}>
-              <Form.Control type="text" placeholder=" Public IP" value={publicIp} onChange={(event) => { setPublicIp(event.target.value) }}/>
+              <Form.Control type="text" placeholder=" Public IP" value={publicIp ? publicIp : ''} onChange={(event) => { setPublicIp(event.target.value) }}/>
           </Col>
           </Form.Group>
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalPrivateIp">
           <Form.Label column sm={2}>
-          Private IP
+          Private IP <span style={{color: "red"}}> * </span>
           </Form.Label>
           <Col sm={10}>
-              <Form.Control type="text" placeholder="Private IP" value={privateIp} onChange={(event) => { setPrivateIp(event.target.value) }}/>
+              <Form.Control type="text" placeholder="Private IP" value={privateIp ? privateIp : ''} onChange={(event) => { setPrivateIp(event.target.value) }}/>
           </Col>
           </Form.Group>
 
@@ -247,7 +284,7 @@ const HostEdit = () => {
               Service/Port
           </Form.Label>
           <Col sm={10}>
-              <Form.Control type="text" placeholder="Service/Port" value={service} onChange={(event) => { setService(event.target.value) }}/>
+              <Form.Control type="text" placeholder="Service/Port" value={service ? service : ''} onChange={(event) => { setService(event.target.value) }}/>
           </Col>
           </Form.Group>
 
@@ -256,7 +293,7 @@ const HostEdit = () => {
               Remark
           </Form.Label>
           <Col sm={10}>
-              <Form.Control as="textarea" rows={3} placeholder="Remark" value={remark} onChange={(event) => { setRemark(event.target.value) }}/>
+              <Form.Control as="textarea" rows={3} placeholder="Remark" value={remark ? remark : ''} onChange={(event) => { setRemark(event.target.value) }}/>
           </Col>
           </Form.Group>
 

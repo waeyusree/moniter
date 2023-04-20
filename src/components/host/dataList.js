@@ -1,31 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Axios from "axios";
+import Moment from 'moment';
 import { Table, Button } from "react-bootstrap";
 import { Link, useParams  } from "react-router-dom";
-import HostTableRow from "./tableRow";
+
+import BootstrapTable from 'react-bootstrap-table-next';
+import filterFactory, { textFilter, selectFilter } from 'react-bootstrap-table2-filter';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+
+const Swal = require('sweetalert2');
 
 const DataList = () => {
-    const params = useParams()
+
+    const { SearchBar, ClearSearchButton } = Search;
+    const params        = useParams()
     const projectId     = params.id;
+    const clientToken   = localStorage.getItem('accessToken');
 
     const [projectDetail, setProjectDetail] = useState([]);
     const [hostList, setHostList] = useState([]);
+    const [isButton, setIsButton] = useState(false);
 
     useEffect(() => {
-        Axios
-        .get(
-            "http://localhost:3001/project/detail/"
-            + projectId
-        )
-        .then(({ data }) => {
-            setHostList(data);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-        
-        /** =========== */
-
         Axios
         .get(
             "http://localhost:3001/projectId/"
@@ -33,7 +30,7 @@ const DataList = () => {
         )
         .then(({ data }) => {
             setProjectDetail(data[0]);
-            console.log(projectDetail);
+            // console.log(projectDetail);
         })
         .catch((error) => {
             console.log(error);
@@ -42,27 +39,296 @@ const DataList = () => {
 
     }, []);
 
-    const DataTable = () => {
-        return hostList.map((res, i) => {
-            return <HostTableRow obj={res} num={i} />;
-        });
-    };
+    useMemo(() => {
+        loadDataList();
+    }, [isButton]);
 
     // === Host === //
     const checkHost = () => {
+        setIsButton(true);
         Axios
         .get("http://localhost:3001/check_host/" + projectId)
         .then(({data}) => {
 
             if(data.status === 200)
             {
+                loadDataList();
                 // console.log(data.dataList);
-                setHostList(data.dataList);
+                // setHostList(data.dataList);
+                setIsButton(false);
             }
 
         });
     };
 
+    const exportHost = () => {
+        Axios({
+            url: 'http://localhost:3001/export_host/' + projectId, //your url
+            method: 'GET',
+            responseType: 'blob', // important
+            headers: {"x-access-token": clientToken}
+        }).then((response) => {
+
+            // console.log(response.data)
+            // create file link in browser's memory
+            const href = URL.createObjectURL(response.data);
+        
+            // create "a" HTML element with href to file & click
+            const link = document.createElement('a');
+            const filename = "Report-Host-" + Moment(new Date()).format('YYYYMMDD-HHmmss') + ".xlsx"
+            link.href = href;
+            // link.setAttribute('download', 'test.xlsx'); //or any other extension
+            link.setAttribute('download', filename); //or any other extension
+            document.body.appendChild(link);
+            link.click();
+        
+            // clean up "a" element & remove ObjectURL
+            document.body.removeChild(link);
+            URL.revokeObjectURL(href);
+        });
+    }; 
+
+    async function loadDataList(){
+
+        Axios
+        .get("http://localhost:3001/project/detail/" + projectId)
+        .then(({ data }) => {
+            setHostList(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }
+
+    let qualityFilter;
+    const selectOptions = {
+        '500': 'Down',
+        '200': 'Up',
+      };
+
+    const columns = [{
+        dataField: '',
+        text: 'ลำดับ',
+        formatter: (cell, row, rowIndex, formatExtraData) => {
+            return rowIndex + 1;
+        },
+        style: {
+            width: 60,
+            textAlign: 'center'
+        }
+      }, {
+        dataField: 'machine_name',
+        text: 'ชื่อเครื่อง',
+        // sort: true,
+        filter: textFilter({
+            placeholder: 'ระบุ...',
+        }),
+      }, {
+        dataField: 'duty_id',
+        text: 'หน้าที่',
+        // sort: true,
+        filter: textFilter({
+            placeholder: 'ระบุ...',
+        }),
+        formatter: (cell, row) => {
+            return (
+                <>
+                    { cell === 1 && 
+                        <span> ({cell}) Web </span>
+                    }
+                    { cell === 2 && 
+                        <span> ({cell}) API </span>
+                    }
+                    { cell === 3 && 
+                        <span> ({cell}) Database </span>
+                    }
+                </>
+            );
+        }
+      }, {
+        dataField: 'public_ip',
+        text: 'Public IP',
+        filter: textFilter({
+            placeholder: 'ระบุ...',
+        }),
+        formatter: (cell, row) => {
+            return (
+                <>
+                    {cell}
+                
+                    {(cell && row.ip_type_id == 1) &&
+                        <>
+                            <br/>
+                            <small variant="primary" style={{fontSize: 12, color: "#1d9fdc"}}>(ใช้ในการตรวจสอบ)</small>
+                        </>
+                    }
+                </>
+            );
+        }
+      }, {
+        dataField: 'private_ip',
+        text: 'Private Ip',
+        filter: textFilter({
+            placeholder: 'ระบุ...',
+        }),
+        formatter: (cell, row) => {
+            return (
+                <>
+                    {cell}
+                
+                    {(cell && row.ip_type_id == 2) &&
+                        <>
+                            <br/>
+                            <small variant="primary" style={{fontSize: 12, color: "#1d9fdc"}}>(ใช้ในการตรวจสอบ)</small>
+                        </>
+                    }
+                </>
+            );
+        }
+      }, {
+        dataField: 'port',
+        text: 'Service/Port',
+        filter: textFilter({
+         
+            placeholder: 'ระบุ...',
+        }),
+      }, {
+        dataField: 'status',
+        text: 'สถานะ',
+        formatter: cell => selectOptions[cell],
+        filter: selectFilter({
+            placeholder: 'เลือก...',
+            options: selectOptions,
+            getFilter: (filter) => {
+                // qualityFilter was assigned once the component has been mounted.
+                console.log(filter)
+                qualityFilter = filter;
+              }
+        }),
+        formatter: (cell, row) => {
+            let text_color = 'red';
+            let text_status = 'Down';
+            if(cell === '200' || cell === '302')
+            {
+                text_color = 'green';
+                text_status = 'Up';
+            }
+
+            return (
+                <>
+                     <span style={{ textAlign: 'center', fontWeight: 600, color: text_color }}> {text_status}({cell}) </span>
+                </>
+            );
+        }
+      }, {
+        dataField: 'remark',
+        text: 'หมายเหตุ',
+        // filter: textFilter(),
+        style: {
+            width: 130,
+        },
+      }, 
+    //   {
+    //     dataField: 'create_date',
+    //     text: 'วันที่สร้าง',
+    //     sort: true,
+    //     style: {
+    //         width: 130,
+    //     },
+    //     formatter: (cell) => {
+    //         if (cell == null) {
+    //           return
+    //         }
+    //         return `${Moment(cell).format("DD/MM/YYYY HH:mm:ss")? Moment(cell).format("DD/MM/YYYY HH:mm:ss"):Moment(cell).format("DD/MM/YYYY HH:mm:ss") }`;
+    //     },
+    //   }, 
+      {
+        dataField: 'update_date',
+        text: 'วันที่อัพเดทล่าสุด',
+        sort: true,
+        style: {
+            width: 130,
+        },
+        formatter: (cell, row) => {
+            if (cell == null) {
+              return `${Moment(row.create_date).format("DD/MM/YYYY HH:mm:ss")? Moment(row.create_date).format("DD/MM/YYYY HH:mm:ss"):Moment(row.create_date).format("DD/MM/YYYY HH:mm:ss") }`;
+            }
+            return `${Moment(cell).format("DD/MM/YYYY HH:mm:ss")? Moment(cell).format("DD/MM/YYYY HH:mm:ss"):Moment(cell).format("DD/MM/YYYY HH:mm:ss") }`;
+        },
+      }, {
+        dataField: 'id',
+        text: 'จัดการ',
+        editable: false,
+        clickToSelect: false,
+        style: {
+            width: 140,
+            textAlign: 'center'
+        },
+        formatter: (cell, row) => {
+            return (
+                <>
+                    <Link className="edit-link"
+                    to={"/host-edit/" + row.id}>
+                    แก้ไข
+                    </Link>
+                    <Button
+                    size="sm" variant="danger"
+                    onClick={() => deleteHost(row.id)}
+                    >
+                    Delete
+                    </Button>
+                </>
+            );
+        }
+      }
+      
+    ];
+
+    const defaultSorted = [{
+        dataField: 'name',
+        order: 'desc'
+      }];
+
+      const deleteHost = (rowId) => {
+
+        Swal.fire({
+            title: "คุณต้องการลบข้อมูล ใช่หรือไหม",
+            // text: "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "ตกลง",
+            cancelButtonText: "ยกเลิก",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        })
+        .then(({ isConfirmed }) => {
+
+            if (isConfirmed) {
+                Axios.delete('http://localhost:3001/host/delete/' + rowId )
+                    .then((response) =>  {
+                        if(response.data.status === 200) {
+                            Swal.fire({
+                                title: response.data.message,
+                                html: "<br/>",
+                                icon: 'success',
+                                showConfirmButton: false,
+                                width: 400,
+                            })
+                            .then(() => {
+                                window.location.reload();
+                            });
+                        }
+                   
+                    })
+                    .catch(() => {
+                        Swal.fire("Error!", "Failed to delete!", "error");
+                    })
+            }
+        })
+    };
+
+   
     return (
         <div className="table-wrapper">
             <br/>
@@ -77,26 +343,49 @@ const DataList = () => {
                 <Link to={"/project-host-create/" + projectId}>
                     <Button variant="primary">เพิ่ม</Button>
                 </Link>
-                <Button variant="primary" style={{marginLeft: 20}} onClick={checkHost}>ตรวจสอบ</Button>
+                <Button variant="primary" style={{marginLeft: 20}} onClick={checkHost}>ตรวจสอบ ณ ปัจจุบัน</Button>
+                <Button variant="primary" style={{marginLeft: 20}} onClick={exportHost}>รายงาน</Button>
             </div>
-            
-            <Table striped bordered hover>
-                <thead>
-                <tr>
-                    <th>ลำดับ</th>
-                    <th>ชื่อเครื่อง</th>
-                    <th>หน้าที่</th>
-                    <th>Public IP</th>
-                    <th>Private IP</th>
-                    <th>Service/Port</th>
-                    <th>Status</th>
-                    <th>หมายเหตุ</th>
-                    <th>Last update</th>
-                    <th style={{width: 132, textAlign: "center"}}>จัดการ</th>
-                </tr>
-                </thead>
-                <tbody>{DataTable()}</tbody>
-            </Table>
+        
+            {/* <BootstrapTable
+                keyField="id"
+                data={ hostList }
+                defaultSorted={ defaultSorted } 
+                columns={ columns }
+                filter={ filterFactory() }
+                pagination={ paginationFactory() }
+                // selectRow={ { mode: 'checkbox', clickToSelect: true } }
+                // expandRow={ expandRow }
+                hover
+                striped
+                /> */}
+
+            <ToolkitProvider
+                keyField="id"
+                data={ hostList }
+                // defaultSorted={ defaultSorted } 
+                columns={ columns }
+                // filter={ filterFactory() }
+                // pagination={ paginationFactory() }
+                // hover
+                // striped
+                    search
+                >
+                {
+                    props => (
+                        <div>
+                            <h3>Input something at below input field:</h3>
+                            <SearchBar { ...props.searchProps } />
+                            <ClearSearchButton { ...props.searchProps } />
+                            <hr />
+                            <BootstrapTable
+                            { ...props.baseProps }
+                            />
+                        </div>
+                    )
+                }
+            </ToolkitProvider>
+
         </div>
     );
 };

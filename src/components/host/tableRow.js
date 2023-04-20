@@ -7,7 +7,7 @@ import Moment from 'moment';
 const Swal = require('sweetalert2');
 
 const HostTableRow = (props) => {
-    const { id , machine_name, duty_id, public_ip, private_ip, port, status, remark, create_date, update_date } = props.obj;
+    const { id , machine_name, duty_id, ip_type_id, public_ip, private_ip, port, status, remark, create_date, update_date } = props.obj;
     
     const deleteHost = () => {
 
@@ -53,13 +53,13 @@ const HostTableRow = (props) => {
     var text_color = 'red';
     if(status == '200' || status == '302')
     {
-        text_color = 'black';
+        text_color = 'green';
     }
 
     var title_duty = '';
     if(duty_id === 1)
     {
-        title_duty = "Wab";
+        title_duty = "Web";
     }
     else if(duty_id === 2)
     {
@@ -76,8 +76,26 @@ const HostTableRow = (props) => {
             <td style={{textAlign: 'center'}}>{props.num + 1 }</td>
             <td>{machine_name}</td>
             <td>{title_duty}</td>
-            <td>{public_ip}</td>
-            <td>{private_ip}</td>
+            <td>
+                {public_ip}
+                
+                {(public_ip && ip_type_id == 1) &&
+                    <>
+                        <br/>
+                        <small variant="primary" style={{fontSize: 12, color: "#1d9fdc"}}>(ใช้ในการตรวจสอบ)</small>
+                    </>
+                }
+            </td>
+            <td>
+                {private_ip}
+
+                {(private_ip && ip_type_id == 2) &&
+                    <>
+                        <br/>
+                        <small variant="primary" style={{fontSize: 12, color: "#1d9fdc"}}>(ใช้ในการตรวจสอบ)</small>
+                    </>
+                }
+            </td>
             <td>{port}</td>
             <td style={{ textAlign: 'center', fontWeight: 600, color: text_color }}>{status}</td>
             <td>{remark}</td>
@@ -85,11 +103,11 @@ const HostTableRow = (props) => {
             <td>
                 <Link className="edit-link"
                 to={"/host-edit/" + id }>
-                Edit
+                แก้ไข
                 </Link>
                 <Button onClick={deleteHost}
                 size="sm" variant="danger">
-                Delete
+                ลบ
                 </Button>
             </td>
         </tr>

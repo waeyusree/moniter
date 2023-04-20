@@ -31,9 +31,29 @@
   margin-right: 10px;
   position: relative;
   top: 1px;
+  text-decoration: none;
   }
   
   .edit-link:hover {
+  text-decoration: none;
+  color: #ffffff;
+  }
+
+  .detail-link {
+  padding: 7px 10px;
+  font-size: 0.875rem;
+  line-height: normal;
+  border-radius: 0.2rem;
+  color: #fff;
+  background-color: #40a8c5;
+  border-color: #40a8c5;
+  margin-right: 10px;
+  position: relative;
+  top: 1px;
+  text-decoration: none;
+  }
+  
+  .detail-link:hover {
   text-decoration: none;
   color: #ffffff;
   }
@@ -49,4 +69,15 @@
   input[type=number] {
   -moz-appearance: textfield;
   }
+
+  /* .react-bootstrap-table .table-bordered thead{
+    font-size: 10px; 		
+  }
   
+  .react-bootstrap-table .table-bordered tbody{
+    font-size: 9px; 
+  } */
+  
+  label.filter-label .sr-only{
+    display: none;
+  }

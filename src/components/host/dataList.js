@@ -7,13 +7,13 @@ import { Link, useParams  } from "react-router-dom";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter, selectFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+// import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
 const Swal = require('sweetalert2');
 
 const DataList = () => {
 
-    const { SearchBar, ClearSearchButton } = Search;
+    // const { SearchBar, ClearSearchButton } = Search;
     const params        = useParams()
     const projectId     = params.id;
     const clientToken   = localStorage.getItem('accessToken');
@@ -102,9 +102,14 @@ const DataList = () => {
 
     let qualityFilter;
     const selectOptions = {
-        '500': 'Down',
-        '200': 'Up',
-      };
+        '0': 'Down',
+        '1': 'Up',
+    };
+    const selectOptionsDuty = {
+        1: 'Web',
+        2: 'API',
+        3: 'Database',
+    };
 
     const columns = [{
         dataField: '',
@@ -127,20 +132,24 @@ const DataList = () => {
         dataField: 'duty_id',
         text: 'หน้าที่',
         // sort: true,
-        filter: textFilter({
-            placeholder: 'ระบุ...',
+        filter: selectFilter({
+            placeholder: 'เลือก...',
+            options: selectOptionsDuty,
         }),
         formatter: (cell, row) => {
             return (
                 <>
                     { cell === 1 && 
-                        <span> ({cell}) Web </span>
+                        // <span> ({cell}) Web </span>
+                        <span> Web </span>
                     }
                     { cell === 2 && 
-                        <span> ({cell}) API </span>
+                        // <span> ({cell}) API </span>
+                        <span> API </span>
                     }
                     { cell === 3 && 
-                        <span> ({cell}) Database </span>
+                        // <span> ({cell}) Database </span>
+                        <span> Database </span>
                     }
                 </>
             );
@@ -193,7 +202,7 @@ const DataList = () => {
             placeholder: 'ระบุ...',
         }),
       }, {
-        dataField: 'status',
+        dataField: 'is_status',
         text: 'สถานะ',
         formatter: cell => selectOptions[cell],
         filter: selectFilter({
@@ -201,14 +210,19 @@ const DataList = () => {
             options: selectOptions,
             getFilter: (filter) => {
                 // qualityFilter was assigned once the component has been mounted.
-                console.log(filter)
+                // console.log(filter)
                 qualityFilter = filter;
               }
         }),
         formatter: (cell, row) => {
+            if(cell === null)
+            {
+               return;
+            }
+
             let text_color = 'red';
             let text_status = 'Down';
-            if(cell === '200' || cell === '302')
+            if(cell === '1')
             {
                 text_color = 'green';
                 text_status = 'Up';
@@ -216,7 +230,7 @@ const DataList = () => {
 
             return (
                 <>
-                     <span style={{ textAlign: 'center', fontWeight: 600, color: text_color }}> {text_status}({cell}) </span>
+                     <span style={{ textAlign: 'center', fontWeight: 600, color: text_color }}> {text_status}({row.status}) </span>
                 </>
             );
         }
@@ -344,10 +358,10 @@ const DataList = () => {
                     <Button variant="primary">เพิ่ม</Button>
                 </Link>
                 <Button variant="primary" style={{marginLeft: 20}} onClick={checkHost}>ตรวจสอบ ณ ปัจจุบัน</Button>
-                <Button variant="primary" style={{marginLeft: 20}} onClick={exportHost}>รายงาน</Button>
+                <Button variant="primary" style={{marginLeft: 20}} onClick={exportHost}>รายงานทั้งหมด</Button>
             </div>
         
-            {/* <BootstrapTable
+            <BootstrapTable
                 keyField="id"
                 data={ hostList }
                 defaultSorted={ defaultSorted } 
@@ -358,9 +372,9 @@ const DataList = () => {
                 // expandRow={ expandRow }
                 hover
                 striped
-                /> */}
+                />
 
-            <ToolkitProvider
+            {/* <ToolkitProvider
                 keyField="id"
                 data={ hostList }
                 // defaultSorted={ defaultSorted } 
@@ -384,7 +398,7 @@ const DataList = () => {
                         </div>
                     )
                 }
-            </ToolkitProvider>
+            </ToolkitProvider> */}
 
         </div>
     );

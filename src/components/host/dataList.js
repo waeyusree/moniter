@@ -52,7 +52,7 @@ const DataList = () => {
 
             if(data.status === 200)
             {
-                loadDataList();
+                // loadDataList();
                 // console.log(data.dataList);
                 // setHostList(data.dataList);
                 setIsButton(false);
@@ -110,6 +110,17 @@ const DataList = () => {
         2: 'API',
         3: 'Database',
     };
+
+    const pagination = paginationFactory({
+
+        sizePerPageList: [{
+          text: '15', value: 15
+        }, {
+          text: '25', value: 25
+        }, {
+          text: '50', value: 50
+        }],
+    });
 
     const columns = [{
         dataField: '',
@@ -367,7 +378,8 @@ const DataList = () => {
                 defaultSorted={ defaultSorted } 
                 columns={ columns }
                 filter={ filterFactory() }
-                pagination={ paginationFactory() }
+                pagination={ pagination }
+                // pagination={ paginationFactory() }
                 // selectRow={ { mode: 'checkbox', clickToSelect: true } }
                 // expandRow={ expandRow }
                 hover

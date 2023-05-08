@@ -43,7 +43,9 @@ const Login = () => {
         {
             // console.log(response.data)
             localStorage.setItem('accessToken', response.data.token);
-            window.location.href = "/";
+
+            // window.location.href = "/"; // หน้า home 
+            window.location.href = "/project-list"; // หน้า project list
 
         //   Swal.fire({
         //     show: true,

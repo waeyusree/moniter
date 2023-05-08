@@ -46,8 +46,6 @@ const HostTableRow = (props) => {
                     })
             }
         })
-
-
     };
 
     return (
@@ -58,17 +56,17 @@ const HostTableRow = (props) => {
             <td>{Moment(create_date).format('DD/MM/YYYY HH:mm:ss')}</td>
             <td>{ (update_date) ? Moment(update_date).format('DD/MM/YYYY HH:mm:ss') : null }</td>
             <td>
-                <Link className="edit-link" target={"_blank"}
+                <Link className="detail-link"
                 to={"/project-detail/" + id}>
-                Detail
+                รายละเอียด
                 </Link>
                 <Link className="edit-link"
                 to={"/project-edit/" + id}>
-                Edit
+                แก้ไข
                 </Link>
                 <Button onClick={deleteProject}
                 size="sm" variant="danger">
-                Delete
+                ลบ
                 </Button>
             </td>
         </tr>

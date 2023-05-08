@@ -83,14 +83,14 @@ const HostEdit = () => {
               </Col>
           </Form.Group>
 
-          <Form.Group as={Row} className="mb-3" controlId="formHorizontalConJob">
+          {/* <Form.Group as={Row} className="mb-3" controlId="formHorizontalConJob">
           <Form.Label column sm={2}>
-              Con Job
+            สรวจสอบทุกๆ(นาที่)
           </Form.Label>
           <Col sm={10}>
-              <Form.Control type="number" placeholder="Con Job" value={conJob} onChange={(event) => { setConJob(event.target.value) }}/>
+              <Form.Control type="number" placeholder="สรวจสอบทุกๆ(นาที่)" value={conJob} onChange={(event) => { setConJob(event.target.value) }}/>
           </Col>
-          </Form.Group>
+          </Form.Group> */}
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalTokenLineNotify">
           <Form.Label column sm={2}>

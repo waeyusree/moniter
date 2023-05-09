@@ -4,6 +4,9 @@ import { Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ProjectTableRow from "./tableRow";
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const DataList = () => {
     const clientToken = localStorage.getItem('accessToken');
     const [projectList, setProjectList] = useState([]);
@@ -11,7 +14,7 @@ const DataList = () => {
     useEffect(() => {
 
         Axios
-        .get("http://localhost:3001/projectList", { 
+        .get( conf.END_POINT_URL + "/projectList", { 
             headers: {"x-access-token": clientToken}
         })
         .then(({ data }) => {

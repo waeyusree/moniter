@@ -9,6 +9,9 @@ import filterFactory, { textFilter, selectFilter } from 'react-bootstrap-table2-
 import paginationFactory from 'react-bootstrap-table2-paginator';
 // import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2');
 
 const DataList = () => {
@@ -25,7 +28,7 @@ const DataList = () => {
     useEffect(() => {
         Axios
         .get(
-            "http://localhost:3001/projectId/"
+            conf.END_POINT_URL + "/projectId/"
             + projectId
         )
         .then(({ data }) => {
@@ -47,7 +50,7 @@ const DataList = () => {
     const checkHost = () => {
         setIsButton(true);
         Axios
-        .get("http://localhost:3001/check_host/" + projectId)
+        .get( conf.END_POINT_URL + "/check_host/" + projectId)
         .then(({data}) => {
 
             if(data.status === 200)
@@ -63,7 +66,7 @@ const DataList = () => {
 
     const exportHost = () => {
         Axios({
-            url: 'http://localhost:3001/export_host/' + projectId, //your url
+            url: conf.END_POINT_URL + '/export_host/' + projectId, //your url
             method: 'GET',
             responseType: 'blob', // important
             headers: {"x-access-token": clientToken}
@@ -91,7 +94,7 @@ const DataList = () => {
     async function loadDataList(){
 
         Axios
-        .get("http://localhost:3001/project/detail/" + projectId)
+        .get( conf.END_POINT_URL + "/project/detail/" + projectId)
         .then(({ data }) => {
             setHostList(data);
         })
@@ -330,7 +333,7 @@ const DataList = () => {
         .then(({ isConfirmed }) => {
 
             if (isConfirmed) {
-                Axios.delete('http://localhost:3001/host/delete/' + rowId )
+                Axios.delete( conf.END_POINT_URL + '/host/delete/' + rowId )
                     .then((response) =>  {
                         if(response.data.status === 200) {
                             Swal.fire({

@@ -7,6 +7,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2');
 
 const DataList = () => {
@@ -16,7 +19,7 @@ const DataList = () => {
     useEffect(() => {
 
         Axios
-        .get("http://localhost:3001/projectList", { 
+        .get( conf.END_POINT_URL + "/projectList", { 
             headers: {"x-access-token": clientToken}
         })
         .then(({ data }) => {
@@ -199,7 +202,7 @@ const DataList = () => {
         .then(({ isConfirmed }) => {
 
             if (isConfirmed) {
-                Axios.delete('http://localhost:3001/project/delete/' + rowId)
+                Axios.delete( conf.END_POINT_URL + '/project/delete/' + rowId)
                     .then((response) =>  {
                         if(response.data.status === 200) {
                             Swal.fire({

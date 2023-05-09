@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import {Nav, Navbar, Container, Form, Row, Col, Button, Table} from 'react-bootstrap';
 import { Link } from "react-router-dom";
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2')
 
 const HostCreate = () => {
@@ -17,7 +20,7 @@ const HostCreate = () => {
     const [tokenLineNotify, setTokenLineNotify] = useState("");
 
     const addProject = () => {
-        Axios.post('http://localhost:3001/project/add', {
+        Axios.post( conf.END_POINT_URL + '/project/add', {
           name: name,
           conJob: conJob,
           tokenLineNotify: tokenLineNotify

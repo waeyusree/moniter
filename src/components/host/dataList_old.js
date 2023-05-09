@@ -5,6 +5,9 @@ import { Table, Button } from "react-bootstrap";
 import { Link, useParams  } from "react-router-dom";
 import HostTableRow from "./tableRow";
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2')
 
 const DataList = () => {
@@ -20,7 +23,7 @@ const DataList = () => {
     useEffect(() => {
         Axios
         .get(
-            "http://localhost:3001/projectId/"
+            conf.END_POINT_URL + "/projectId/"
             + projectId
         )
         .then(({ data }) => {
@@ -48,7 +51,7 @@ const DataList = () => {
     const checkHost = () => {
         setIsButton(true);
         Axios
-        .get("http://localhost:3001/check_host/" + projectId)
+        .get( conf.END_POINT_URL + "/check_host/" + projectId)
         .then(({data}) => {
 
             if(data.status === 200)
@@ -107,7 +110,7 @@ const DataList = () => {
         // });
 
         Axios({
-            url: 'http://localhost:3001/export_host/' + projectId, //your url
+            url: conf.END_POINT_URL + '/export_host/' + projectId, //your url
             method: 'GET',
             responseType: 'blob', // important
             headers: {"x-access-token": clientToken}
@@ -135,7 +138,7 @@ const DataList = () => {
     async function loadDataList(){
 
         Axios
-        .get("http://localhost:3001/project/detail/" + projectId)
+        .get( conf.END_POINT_URL + "/project/detail/" + projectId)
         .then(({ data }) => {
             setHostList(data);
         })

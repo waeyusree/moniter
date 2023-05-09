@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
 // import { faUser} from '@fortawesome/free-regular-svg-icons'
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2')
 
 const Login = () => {
@@ -38,7 +41,7 @@ const Login = () => {
         password: password,
       };
   
-      Axios.post('http://localhost:3001/login', dataPost).then((response) => {
+      Axios.post( conf.END_POINT_URL + '/login', dataPost).then((response) => {
         if(response.data.status === 200)
         {
             // console.log(response.data)
@@ -70,8 +73,6 @@ const Login = () => {
   
       });
   }
-
-  
 
   return (
     <>

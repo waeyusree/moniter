@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Moment from 'moment';
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2');
 
 const HostTableRow = (props) => {
@@ -25,7 +28,7 @@ const HostTableRow = (props) => {
         .then(({ isConfirmed }) => {
 
             if (isConfirmed) {
-                axios.delete('http://localhost:3001/host/delete/' + id )
+                axios.delete( conf.END_POINT_URL + '/host/delete/' + id )
                     .then((response) =>  {
                         if(response.data.status === 200) {
                             Swal.fire({

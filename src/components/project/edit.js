@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import {Nav, Navbar, Container, Form, Row, Col, Button, Table} from 'react-bootstrap';
 import { Link, useParams  } from "react-router-dom";
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2')
 
 const HostEdit = () => {
@@ -19,7 +22,7 @@ const HostEdit = () => {
     useEffect(() => {
       Axios
         .get(
-          "http://localhost:3001/projectId/" 
+          conf.END_POINT_URL + "/projectId/" 
           + id
         )
         .then((response) => {
@@ -35,7 +38,7 @@ const HostEdit = () => {
     }, []);
 
     const updateHost = () => {
-        Axios.put('http://localhost:3001/project/update', {
+        Axios.put( conf.END_POINT_URL + '/project/update', {
           id: id,
           name: name,
           conJob: conJob,

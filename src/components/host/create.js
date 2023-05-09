@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import {Nav, Navbar, Container, Form, Row, Col, Button, Table} from 'react-bootstrap';
 import { Link, useParams  } from "react-router-dom";
 
+/** === config url === */
+import conf from "../../config/env.conf.js";
+
 const Swal = require('sweetalert2')
 
 const HostCreate = () => {
@@ -50,7 +53,7 @@ const HostCreate = () => {
       dataPost.myDatabase = myDatabase;
     }
 
-    Axios.post('http://localhost:3001/host/add', dataPost).then((response) => {
+    Axios.post( conf.END_POINT_URL + '/host/add', dataPost).then((response) => {
       if(response.data.status === 200)
       {
         Swal.fire({

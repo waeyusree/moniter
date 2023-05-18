@@ -44,21 +44,21 @@ const HostEdit = () => {
 
           // console.log(response);
 
-          setProjectId(response.data[0].project_id);
-          setMachineName(response.data[0].machine_name);
-          setDutyId(response.data[0].duty_id);
-          setIpTypeId(response.data[0].ip_type_id);
-          setPublicIp(response.data[0].public_ip);
-          setPrivateIp(response.data[0].private_ip);
-          setService(response.data[0].port);
-          setRemark(response.data[0].remark);
+          setProjectId(response.data.project_id);
+          setMachineName(response.data.machine_name);
+          setDutyId(response.data.duty_id);
+          setIpTypeId(response.data.ip_type_id);
+          setPublicIp(response.data.public_ip);
+          setPrivateIp(response.data.private_ip);
+          setService(response.data.port);
+          setRemark(response.data.remark);
 
-          setSqlTypeId(response.data[0].sql_type_id);
-          setUsername(response.data[0].username);
-          setPassword(response.data[0].password);
-          setMyDatabase(response.data[0].my_database);
+          setSqlTypeId(response.data.sql_type_id);
+          setUsername(response.data.username);
+          setPassword(response.data.password);
+          setMyDatabase(response.data.my_database);
 
-          if(response.data[0].duty_id === 3) /** === เป็นชนิด database === */
+          if(response.data.duty_id === 3) /** === เป็นชนิด database === */
           {
             setShowOptionDatabase(true);
           }

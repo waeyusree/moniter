@@ -216,6 +216,17 @@ const DataList = () => {
                                 window.location.reload();
                             });
                         }
+                        else
+                        {
+                            Swal.fire({
+                                show: true,
+                                title: response.data.message,
+                                html: "<br/>",
+                                icon: 'warning',
+                                showConfirmButton: false,
+                                width: 400,
+                              });
+                        }
                    
                     })
                     .catch(() => {

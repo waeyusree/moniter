@@ -32,7 +32,7 @@ const DataList = () => {
             + projectId
         )
         .then(({ data }) => {
-            setProjectDetail(data[0]);
+            setProjectDetail(data);
             // console.log(projectDetail);
         })
         .catch((error) => {

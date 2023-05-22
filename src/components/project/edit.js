@@ -29,9 +29,9 @@ const HostEdit = () => {
 
           // console.log(response);
 
-          setName(response.data[0].name);
-          setConJob(response.data[0].con_job);
-          setTokenLineNotify(response.data[0].token_line_notify);
+          setName(response.data.name);
+          setConJob(response.data.con_job);
+          setTokenLineNotify(response.data.token_line_notify);
 
         })
         .catch((err) => console.log(err));

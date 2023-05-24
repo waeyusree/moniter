@@ -38,8 +38,6 @@ const DataList = () => {
         .catch((error) => {
             console.log(error);
         });
-
-
     }, []);
 
     useMemo(() => {
@@ -174,18 +172,26 @@ const DataList = () => {
         filter: textFilter({
             placeholder: 'ระบุ...',
         }),
-        formatter: (cell, row) => {
+        formatter: (cell, row, rowIndex) => {
             return (
-                <>
-                    {cell}
-                
+                <div key={rowIndex}>
+                    {(cell && row.duty_id == 3 ) && 
+                        <>
+                            {cell}
+                        </>
+                    }
+
+                    {(cell && (row.duty_id == 1 || row.duty_id == 2) ) && 
+                       <a href={'http://' + cell} target="_blank"> {cell} </a>
+                    }
+
                     {(cell && row.ip_type_id == 1) &&
                         <>
                             <br/>
                             <small variant="primary" style={{fontSize: 12, color: "#1d9fdc"}}>(ใช้ในการตรวจสอบ)</small>
                         </>
                     }
-                </>
+                </div>
             );
         }
       }, {

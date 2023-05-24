@@ -1,8 +1,11 @@
 import Axios from 'axios';
 import { useState, useEffect } from 'react';
 
-import {Nav, Navbar, Container, Form, Row, Col, Button, Table} from 'react-bootstrap';
+import {Nav, Navbar, Container, Form, Row, Col, Button, InputGroup} from 'react-bootstrap';
 import { Link, useParams  } from "react-router-dom";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
 /** === config url === */
 import conf from "../../config/env.conf.js";
@@ -17,6 +20,9 @@ const HostCreate = () => {
   // useEffect(() => {
     
   // }, []);
+
+  const [showPass, setShowPass]           = useState(false);
+  const [typePassword,setTypePassword]    = useState("password");
 
   const [projectId, setProjectId]         = useState(id);
   const [machineName, setMachineName]     = useState("");
@@ -121,6 +127,19 @@ const HostCreate = () => {
     setIpTypeId(event.target.value);
   };
 
+  const clickShowPass = (event) => {
+    if(showPass === false)
+    {
+      setTypePassword("text")
+      setShowPass(true);
+    }
+    else
+    {
+      setTypePassword("password")
+      setShowPass(false);
+    }
+  };
+
   return (
     <>
       <Form>
@@ -192,7 +211,13 @@ const HostCreate = () => {
                   Password
               </Form.Label>
               <Col sm={6}>
-                  <Form.Control type="password" placeholder="Password" value={password} onChange={(event) => { setPassword(event.target.value) }}/>
+                <InputGroup>
+                  <Form.Control type={typePassword} placeholder="Password" value={password} onChange={(event) => { setPassword(event.target.value) }}/>
+                  <InputGroup.Text>
+                      <FontAwesomeIcon onClick={clickShowPass} icon={showPass ? faEye : faEyeSlash } />
+                  </InputGroup.Text>
+                </InputGroup>
+
               </Col>
               </Form.Group>
 

@@ -17,10 +17,6 @@ const HostCreate = () => {
   const params = useParams()
   const id     = params.id;
 
-  // useEffect(() => {
-    
-  // }, []);
-
   const [showPass, setShowPass]           = useState(false);
   const [typePassword,setTypePassword]    = useState("password");
 
@@ -39,6 +35,29 @@ const HostCreate = () => {
   const [password, setPassword]       = useState("");
   const [myDatabase, setMyDatabase]   = useState("");
 
+  const clientToken = sessionStorage.getItem('accessToken');
+  const [dutyList, setDutyList] = useState([]);
+
+    useEffect(() => {
+
+        Axios
+        .get( conf.END_POINT_URL + "/dutyList", { 
+            headers: {"x-access-token": clientToken}
+        })
+        .then(({ data }) => {
+            setDutyList(data);
+        })
+        .catch((error) => {
+            console.log(error);
+            
+            if(error.response.status === 401)
+            {
+              sessionStorage.removeItem("accessToken");
+                window.location.href = "/";
+            }
+        });
+    }, []);
+
   const addHost = () => {
     const dataPost = {
       projectId: projectId,
@@ -51,7 +70,12 @@ const HostCreate = () => {
       remark: remark
     };
 
-    if(parseInt(dutyId) === 3) /** === เป็นชนิด database === */
+    /** === เป็นชนิด database === */
+    let resultDutyListObjNameToId   = dutyList.reduce((a, v) => ({ ...a, [v.duty_name]: v.id}), {}) ;
+    if(
+      parseInt(dutyId) === resultDutyListObjNameToId['DB(MySql)'] ||
+      parseInt(dutyId) === resultDutyListObjNameToId['DB(SQLServer)'] 
+      )
     {
       dataPost.sqlTypeId = sqlTypeId;
       dataPost.username = username;
@@ -67,7 +91,8 @@ const HostCreate = () => {
           title: response.data.message,
           html: "<br/>",
           icon: 'success',
-          showConfirmButton: false,
+          showConfirmButton: true,
+          confirmButtonText: "ตกลง",
           width: 400,
         });
 
@@ -92,7 +117,8 @@ const HostCreate = () => {
           title: response.data.message,
           html: "<br/>",
           icon: 'warning',
-          showConfirmButton: false,
+          showConfirmButton: true,
+          confirmButtonText: "ตกลง",
           width: 400,
         });
       }
@@ -102,10 +128,15 @@ const HostCreate = () => {
 
   const toggleOptionDatabase = (event) => {
     const value = event.target.value;
+    const portDefault = event.target[event.target.selectedIndex].getAttribute("data-port-default");
+
     if(value)
     {
+      setService(portDefault);
       setDutyId(value);
-      if(value === '3')
+
+      /** === set show/hide feild database === */
+      if(value === '5' || value === '6') // 5 : 'DB(MySql)' , 6 : 'DB(SQLServer)'
       {
         setShowOptionDatabase(true);
       }
@@ -143,7 +174,7 @@ const HostCreate = () => {
   return (
     <>
       <Form>
-        <h3>เพิ่ม Host/Server</h3>
+        <h5>เพิ่ม Host/Server</h5>
 
         {/* <Form.Group as={Row} className="mb-3" controlId="formHorizontalNameProject">
         <Form.Label column sm={2}>
@@ -174,9 +205,16 @@ const HostCreate = () => {
             
             <Form.Select aria-label="Default select example" value={dutyId} onChange={toggleOptionDatabase}> {/* onChange={(event) => { setDutyId(event.target.value) }} */}
               <option>--- เลือก ---</option>
-              <option value="1">Web</option>
+              {/* <option value="1">Web</option>
               <option value="2">API</option>
-              <option value="3">Database</option> 
+              <option value="3">Database</option>  */}
+
+              {dutyList.map((dutyDetail, index) => (
+                  <option key={index} value={dutyDetail.id} data-port-default={dutyDetail.port_default}> 
+                    {dutyDetail.duty_name} 
+                  </option>
+              ))}
+
             </Form.Select>
         </Col>
         </Form.Group>
@@ -270,7 +308,7 @@ const HostCreate = () => {
 
         <Form.Group as={Row} className="mb-3" controlId="formHorizontalPrivateIp">
         <Form.Label column sm={2}>
-        Private IP <span style={{color: "red"}}> * </span>
+          Private IP
         </Form.Label>
         <Col sm={10}>
             <Form.Control type="text" placeholder="Private IP" value={privateIp} onChange={(event) => { setPrivateIp(event.target.value) }}/>
@@ -288,10 +326,10 @@ const HostCreate = () => {
 
         <Form.Group as={Row} className="mb-3" controlId="formHorizontalRemark">
         <Form.Label column sm={2}>
-            Remark
+            หมายเหตุ เช่น spac เครื่อง
         </Form.Label>
         <Col sm={10}>
-            <Form.Control as="textarea" rows={3} placeholder="Remark" value={remark} onChange={(event) => { setRemark(event.target.value) }}/>
+            <Form.Control as="textarea" rows={3} placeholder="หมายเหตุ เช่น spac เครื่อง" value={remark} onChange={(event) => { setRemark(event.target.value) }}/>
         </Col>
         </Form.Group>
   

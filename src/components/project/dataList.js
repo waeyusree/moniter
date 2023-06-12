@@ -13,7 +13,7 @@ import conf from "../../config/env.conf.js";
 const Swal = require('sweetalert2');
 
 const DataList = () => {
-    const clientToken = localStorage.getItem('accessToken');
+    const clientToken = sessionStorage.getItem('accessToken');
     const [projectList, setProjectList] = useState([]);
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const DataList = () => {
             
             if(error.response.status === 401)
             {
-                localStorage.removeItem("accessToken");
+                sessionStorage.removeItem("accessToken");
                 window.location.href = "/";
             }
         });
@@ -209,7 +209,8 @@ const DataList = () => {
                                 title: response.data.message,
                                 html: "<br/>",
                                 icon: 'success',
-                                showConfirmButton: false,
+                                showConfirmButton: true,
+                                confirmButtonText: "ตกลง",
                                 width: 400,
                             })
                             .then(() => {
@@ -223,7 +224,8 @@ const DataList = () => {
                                 title: response.data.message,
                                 html: "<br/>",
                                 icon: 'warning',
-                                showConfirmButton: false,
+                                showConfirmButton: true,
+                                confirmButtonText: "ตกลง",
                                 width: 400,
                               });
                         }
@@ -239,7 +241,7 @@ const DataList = () => {
     return (
         <div className="table-wrapper">
             <br/>
-            <h3>รายการโครงการ</h3>
+            <h5>รายการโครงการ</h5>
             <br/>
 
             <div style={{paddingBottom: 5}}>

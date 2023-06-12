@@ -17,10 +17,6 @@ const HostEdit = () => {
   const params = useParams()
   const id     = params.id;
 
-    // useEffect(() => {
-      
-    // }, []);
-
     const [showPass, setShowPass]           = useState(false);
     const [typePassword,setTypePassword]    = useState("password");
 
@@ -39,40 +35,50 @@ const HostEdit = () => {
     const [password, setPassword]       = useState("");
     const [myDatabase, setMyDatabase]   = useState("");
 
-    // Load data from server and reinitialize student form
+    const clientToken = sessionStorage.getItem('accessToken');
+    const [dutyList, setDutyList] = useState([]);
+
     useEffect(() => {
+
       Axios
-        .get(
-          conf.END_POINT_URL + "/hostId/" 
-          + id
-        )
-        .then((response) => {
+        .get(conf.END_POINT_URL + "/hostId/" + id)
+        .then(({data}) => {
 
-          // console.log(response);
+          // console.log(data);
 
-          setProjectId(response.data.project_id);
-          setMachineName(response.data.machine_name);
-          setDutyId(response.data.duty_id);
-          setIpTypeId(response.data.ip_type_id);
-          setPublicIp(response.data.public_ip);
-          setPrivateIp(response.data.private_ip);
-          setService(response.data.port);
-          setRemark(response.data.remark);
+          setDutyList(data.dutyList);
 
-          setSqlTypeId(response.data.sql_type_id);
-          setUsername(response.data.username);
-          setPassword(response.data.password);
-          setMyDatabase(response.data.my_database);
+          setProjectId(data.hostDetail.project_id);
+          setMachineName(data.hostDetail.machine_name);
+          setDutyId(data.hostDetail.duty_id);
+          setIpTypeId(data.hostDetail.ip_type_id);
+          setPublicIp(data.hostDetail.public_ip);
+          setPrivateIp(data.hostDetail.private_ip);
+          setService(data.hostDetail.port);
+          setRemark(data.hostDetail.remark);
 
-          if(response.data.duty_id === 3) /** === เป็นชนิด database === */
+          setSqlTypeId(data.hostDetail.sql_type_id);
+          setUsername(data.hostDetail.username);
+          setPassword(data.hostDetail.password);
+          setMyDatabase(data.hostDetail.my_database);
+
+          /** === เป็นชนิด database === */
+          let resultDutyListObjNameToId   = data.dutyList.reduce((a, v) => ({ ...a, [v.duty_name]: v.id}), {}) ;
+          if(
+            data.hostDetail.duty_id === resultDutyListObjNameToId['DB(MySql)'] ||
+            data.hostDetail.duty_id === resultDutyListObjNameToId['DB(SQLServer)'] 
+            )
           {
             setShowOptionDatabase(true);
           }
 
-          // const { name, email, rollno } = response.data;
+          // const { name, email, rollno } = data.hostDetail;
           // setFormValues({ name, email, rollno });
         })
-        .catch((err) => console.log(err));
+        .catch((error) => {
+          console.log(error);
+      });
+
     }, []);
 
     const updateHost = () => {
@@ -89,7 +95,11 @@ const HostEdit = () => {
       };
   
       /** === database === */
-      if(parseInt(dutyId) === 3)
+      let resultDutyListObjNameToId   = dutyList.reduce((a, v) => ({ ...a, [v.duty_name]: v.id}), {}) ;
+      if(
+        parseInt(dutyId) === resultDutyListObjNameToId['DB(MySql)'] ||
+        parseInt(dutyId) === resultDutyListObjNameToId['DB(SQLServer)'] 
+        )
       {
         dataPost.sqlTypeId = sqlTypeId;
         dataPost.username = username;
@@ -108,7 +118,8 @@ const HostEdit = () => {
             title: response.data.message,
             html: "<br/>",
             icon: 'success',
-            showConfirmButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "ตกลง",
             width: 400,
           });
 
@@ -120,7 +131,8 @@ const HostEdit = () => {
             title: response.data.message,
             html: "<br/>",
             icon: 'warning',
-            showConfirmButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "ตกลง",
             width: 400,
           });
         }
@@ -130,10 +142,14 @@ const HostEdit = () => {
 
     const toggleOptionDatabase = (event) => {
       const value = event.target.value;
+      const portDefault = event.target[event.target.selectedIndex].getAttribute("data-port-default");
+
       if(value)
       {
+        setService(portDefault);
         setDutyId(value);
-        if(value === '3')
+
+        if(value === '5' || value === '6')
         {
           setShowOptionDatabase(true);
         }
@@ -141,7 +157,7 @@ const HostEdit = () => {
         {
           setShowOptionDatabase(false);
 
-          setService("");
+          // setService("");
           setSqlTypeId("");
           setUsername("");
           setPassword("");
@@ -174,7 +190,7 @@ const HostEdit = () => {
     return (
       <>
         <Form>
-          <h3>แก้ไข Host/Server</h3>
+          <h5>แก้ไข Host/Server</h5>
 
             {/* <Form.Group as={Row} className="mb-3" controlId="formHorizontalNameProject">
           <Form.Label column sm={2}>
@@ -205,9 +221,16 @@ const HostEdit = () => {
               
               <Form.Select aria-label="Default select example" value={dutyId ? dutyId : ''} onChange={toggleOptionDatabase}> {/* onChange={(event) => { setDutyId(event.target.value) }} */}
                 <option value="">--- เลือก ---</option>
-                <option value="1">Web</option>
+                {/* <option value="1">Web</option>
                 <option value="2">API</option>
-                <option value="3">Database</option>
+                <option value="3">Database</option> */}
+                
+                {dutyList.map((dutyDetail, index) => (
+                    <option key={index} value={dutyDetail.id} data-port-default={dutyDetail.port_default}> 
+                      {dutyDetail.duty_name} 
+                    </option>
+                ))}
+
               </Form.Select>
           </Col>
           </Form.Group>
@@ -300,7 +323,7 @@ const HostEdit = () => {
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalPrivateIp">
           <Form.Label column sm={2}>
-          Private IP <span style={{color: "red"}}> * </span>
+            Private IP
           </Form.Label>
           <Col sm={10}>
               <Form.Control type="text" placeholder="Private IP" value={privateIp ? privateIp : ''} onChange={(event) => { setPrivateIp(event.target.value) }}/>
@@ -318,10 +341,10 @@ const HostEdit = () => {
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalRemark">
           <Form.Label column sm={2}>
-              Remark
+            หมายเหตุ เช่น spac เครื่อง
           </Form.Label>
           <Col sm={10}>
-              <Form.Control as="textarea" rows={3} placeholder="Remark" value={remark ? remark : ''} onChange={(event) => { setRemark(event.target.value) }}/>
+              <Form.Control as="textarea" rows={3} placeholder="หมายเหตุ เช่น spac เครื่อง" value={remark ? remark : ''} onChange={(event) => { setRemark(event.target.value) }}/>
           </Col>
           </Form.Group>
 

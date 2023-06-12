@@ -44,7 +44,7 @@ const Login = () => {
         if(response.data.status === 200)
         {
             // console.log(response.data)
-            localStorage.setItem('accessToken', response.data.token);
+            sessionStorage.setItem('accessToken', response.data.token);
 
             // window.location.href = "/"; // หน้า home 
             window.location.href = "/project-list"; // หน้า project list
@@ -54,7 +54,8 @@ const Login = () => {
         //     title: response.data.message,
         //     html: "<br/>",
         //     icon: 'success',
-        //     showConfirmButton: false,
+        //     showConfirmButton: true,
+        //     confirmButtonText: "ตกลง",
         //     width: 400,
         //   });
         }
@@ -65,7 +66,8 @@ const Login = () => {
             title: response.data.message,
             html: "<br/>",
             icon: 'warning',
-            showConfirmButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "ตกลง",
             width: 400,
           });
         }
@@ -76,7 +78,7 @@ const Login = () => {
   return (
     <>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Card style={{ width: '18rem', margin: 'auto', marginTop: 100 }}>
+        <Card style={{ width: '18rem', transform: 'translate(-50%,-50%)', position: 'absolute', top: '50%', left: '50%' }}>
             <Card.Body>
                 <Card.Title style={{textAlign: "center"}}>เข้าสู่ระบบ</Card.Title>
 

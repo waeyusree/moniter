@@ -1,4 +1,5 @@
 // import logo from './logo.svg';
+import bg from './wave.png';
 import './App.css';
 
 import Axios from 'axios';
@@ -17,25 +18,28 @@ import ProjectEdit from "./components/project/edit";
 import HostCreate from "./components/host/create";
 import HostEdit from "./components/host/edit";
 import HostList from "./components/host/dataList";
+import HostHistory from "./components/host/history";
 
 import Login from "./components/login";
 
 function App() {
 
   function logout(){
-    localStorage.removeItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     window.location.href = "/";
   }
 
-  // localStorage.setItem('accessToken', '1234');
-  // localStorage.removeItem("accessToken");
+  // sessionStorage.setItem('accessToken', '1234');
+  // sessionStorage.removeItem("accessToken");
 
-  const token = localStorage.getItem('accessToken');
+  const token = sessionStorage.getItem('accessToken');
   // console.log(token);
 
   if(!token) {
     return (
       <>
+        {/* <div style={{backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat',  width: '100vw', height: '100vh'}}> */}
+        <div className="bg-login">
         <Router>
         <Container>
             <Row>
@@ -45,6 +49,7 @@ function App() {
             </Row>
           </Container>
         </Router>
+        </div>
       </>
     )
   }
@@ -54,10 +59,11 @@ function App() {
       <Router>
         <div className="App">
           <header className="App-header">
-            <Navbar bg="dark" variant="dark">
+            {/* <Navbar bg="dark" variant="dark"> */}
+            <Navbar className="bg-navbar">
               <Container>
                 <Navbar.Brand>
-                  <Link to={"/"} 
+                  <Link to={"#"} 
                     className="nav-link">
                     Moniter
                   </Link>
@@ -101,6 +107,7 @@ function App() {
                     <Route path="/host-list" element={<HostList/>} />
                     <Route path="/host-create" element={<HostCreate/>} />
                     <Route path="/host-edit/:id" element={<HostEdit/>} />
+                    <Route path="/host-history/:id" element={<HostHistory/>} />
 
                   </Routes>
                 </div>

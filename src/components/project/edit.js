@@ -52,7 +52,8 @@ const HostEdit = () => {
               title: response.data.message,
               html: "<br/>",
               icon: 'success',
-              showConfirmButton: false,
+              showConfirmButton: true,
+              confirmButtonText: "ตกลง",
               width: 400,
             });
 
@@ -64,7 +65,8 @@ const HostEdit = () => {
               title: response.data.message,
               html: "<br/>",
               icon: 'warning',
-              showConfirmButton: false,
+              showConfirmButton: true,
+              confirmButtonText: "ตกลง",
               width: 400,
             });
           }
@@ -75,11 +77,11 @@ const HostEdit = () => {
     return (
       <>
         <Form>
-          <h3>แก่ไขโครงการ</h3>
+          <h5>แก้ไขโครงการ</h5>
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalName">
           <Form.Label column sm={2}>
-          ชื่อโครงงาน
+          ชื่อโครงงาน <span style={{color: "red"}}> * </span>
           </Form.Label>
           <Col sm={10}>
               <Form.Control type="text" placeholder="ชื่อโครงงาน" value={name} onChange={(event) => { setName(event.target.value) }}/>
@@ -97,7 +99,7 @@ const HostEdit = () => {
 
           <Form.Group as={Row} className="mb-3" controlId="formHorizontalTokenLineNotify">
           <Form.Label column sm={2}>
-          Token line notify
+          Token line notify <span style={{color: "red"}}> * </span>
           </Form.Label>
           <Col sm={10}>
               <Form.Control type="text" placeholder=" Token line notify" value={tokenLineNotify} onChange={(event) => { setTokenLineNotify(event.target.value) }}/>

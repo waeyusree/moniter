@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Axios from "axios";
 import Moment from 'moment';
-import { Col, Row, Form, Table, Button, Modal, ListGroup, Spinner} from "react-bootstrap";
+import { Col, Row, Form, Table, Button, Modal, ListGroup, Spinner, OverlayTrigger, Tooltip} from "react-bootstrap";
 import { Link, useParams  } from "react-router-dom";
 
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -39,6 +39,60 @@ const DataList = () => {
     const [show, setShow]                       = useState(false);
     const handleClose                           = () => setShow(false);
     const handleShow                            = () => setShow(true);
+
+    const handleToggle                          = (e) => {
+       
+        const isChecked = e.target.checked;
+        const dataPost  = {
+            id : e.target.id
+        };
+   
+        if(isChecked === true)
+        {
+            // console.log(true);
+            e.target.setAttribute('defaultChecked', true);
+            dataPost.isActive = '1';
+        }
+
+        if(isChecked === false)
+        {
+            // console.log(false);
+            e.target.setAttribute('defaultChecked', false);
+            dataPost.isActive = '0';
+        }
+
+        if(dataPost.isActive)
+        {
+            Axios.put( conf.END_POINT_URL + '/host/updateActive', dataPost).then((response) => {
+
+                if(response.data.status === 200)
+                {
+                //   Swal.fire({
+                //     show: true,
+                //     title: response.data.message,
+                //     html: "<br/>",
+                //     icon: 'success',
+                //     showConfirmButton: true,
+                //     confirmButtonText: "ตกลง",
+                //     width: 400,
+                //   });
+                }
+                else
+                {
+                  Swal.fire({
+                    show: true,
+                    title: response.data.message,
+                    html: "<br/>",
+                    icon: 'warning',
+                    showConfirmButton: true,
+                    confirmButtonText: "ตกลง",
+                    width: 400,
+                  });
+                }
+        
+              });
+        }
+    } 
 
     useMemo(() => {
         loadDataList(projectId);
@@ -187,6 +241,35 @@ const DataList = () => {
             textAlign: 'center'
         }
       }, {
+        dataField: 'is_active',
+        text: 'เปิด/ปิด',
+        formatter: (cell, row, rowIndex, formatExtraData) => {
+            if (cell === '1') {
+                cell = true
+            }
+            else {
+                cell = false
+            }
+
+            return (
+                <>
+                <Form.Check
+                    type="switch"
+                    label=""
+                    id={row.id}
+                    // checked={cell}
+                    defaultChecked={cell}
+                    onChange={formatExtraData.handle}
+                />
+                </>
+            )
+        },
+        formatExtraData: { handle: handleToggle },
+        style: {
+            width: 60,
+            textAlign: 'center'
+        }
+      }, {
         dataField: 'machine_name',
         text: 'ชื่อเครื่อง',
         // sort: true,
@@ -239,7 +322,9 @@ const DataList = () => {
                 <div key={rowIndex}>
                     {(cell && (
                         row.duty_id == resultDutyListObjDutyId['DB(MySql)'] || 
-                        row.duty_id == resultDutyListObjDutyId['DB(MySql)']
+                        row.duty_id == resultDutyListObjDutyId['DB(MySql)'] ||
+                        row.duty_id == resultDutyListObjDutyId['FTP']       ||
+                        row.duty_id == resultDutyListObjDutyId['SFTP']
                     )) && 
                         <>
                             {cell}
@@ -321,7 +406,24 @@ const DataList = () => {
 
             return (
                 <>
-                     <span style={{ textAlign: 'center', fontWeight: 600, color: text_color }}> {text_status}({row.status}) </span>
+                    { text_status === 'Up' &&
+                        <span style={{ textAlign: 'center', fontWeight: 600, color: text_color }}> {text_status}({row.status}) </span>
+                    }
+
+                    { text_status === 'Down' &&
+                        <OverlayTrigger
+                        key='right'
+                        placement='right'
+                        overlay={
+                            <Tooltip id='tooltip-right'>
+                            Error : <strong>{row.message_error}</strong>
+                            </Tooltip>
+                        }
+                        >
+                        {/* <Button variant="secondary">Tooltip on {placement}</Button> */}
+                        <span style={{ textAlign: 'center', fontWeight: 600, color: text_color }}> {text_status}({row.status}) </span>
+                        </OverlayTrigger>
+                    }
                 </>
             );
         }
@@ -370,8 +472,10 @@ const DataList = () => {
             textAlign: 'center'
         },
         formatter: (cell, row) => {
+            
             return (
                 <>
+             
                     <Link className="detail-link"
                     to={"/host-history/" + row.id}>
                     กราฟ

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
 import Moment from 'moment';
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
@@ -15,6 +15,60 @@ const Swal = require('sweetalert2');
 const DataList = () => {
     const clientToken = sessionStorage.getItem('accessToken');
     const [projectList, setProjectList] = useState([]);
+
+    const handleToggle = (e) => {
+       
+        const isChecked = e.target.checked;
+        const dataPost  = {
+            id : e.target.id
+        };
+   
+        if(isChecked === true)
+        {
+            // console.log(true);
+            e.target.setAttribute('defaultChecked', true);
+            dataPost.isActive = '1';
+        }
+
+        if(isChecked === false)
+        {
+            // console.log(false);
+            e.target.setAttribute('defaultChecked', false);
+            dataPost.isActive = '0';
+        }
+
+        if(dataPost.isActive)
+        {
+            Axios.put( conf.END_POINT_URL + '/project/updateActive', dataPost).then((response) => {
+
+                if(response.data.status === 200)
+                {
+                //   Swal.fire({
+                //     show: true,
+                //     title: response.data.message,
+                //     html: "<br/>",
+                //     icon: 'success',
+                //     showConfirmButton: true,
+                //     confirmButtonText: "ตกลง",
+                //     width: 400,
+                //   });
+                }
+                else
+                {
+                  Swal.fire({
+                    show: true,
+                    title: response.data.message,
+                    html: "<br/>",
+                    icon: 'warning',
+                    showConfirmButton: true,
+                    confirmButtonText: "ตกลง",
+                    width: 400,
+                  });
+                }
+        
+              });
+        }
+    }
 
     useEffect(() => {
 
@@ -46,6 +100,35 @@ const DataList = () => {
         formatter: (cell, row, rowIndex, formatExtraData) => {
             return rowIndex + 1;
         },
+        style: {
+            width: 60,
+            textAlign: 'center'
+        }
+      }, {
+        dataField: 'is_active',
+        text: 'เปิด/ปิด',
+        formatter: (cell, row, rowIndex, formatExtraData) => {
+            if (cell === '1') {
+                cell = true
+            }
+            else {
+                cell = false
+            }
+
+            return (
+                <>
+                <Form.Check
+                    type="switch"
+                    label=""
+                    id={row.id}
+                    // checked={cell}
+                    defaultChecked={cell}
+                    onChange={formatExtraData.handle}
+                />
+                </>
+            )
+        },
+        formatExtraData: { handle: handleToggle },
         style: {
             width: 60,
             textAlign: 'center'
